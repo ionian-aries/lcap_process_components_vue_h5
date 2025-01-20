@@ -40,6 +40,7 @@ export function genOwProcessButton(node: naslTypes.ViewElement | any) {
     addSignRadioRef: view.getViewElementUniqueName('radio_group_addSign'), // 加签单选组
     revertFlowRadioRef: view.getViewElementUniqueName('radio_group_revert_flow'), // 撤回流转到单选组
     revertReSubmitRadioRef: view.getViewElementUniqueName('radio_group_revert_resubmit'), // 撤回重新提交到单选组
+    buttonToastRef: view.getViewElementUniqueName('button_toast'), // 回退提示
   };
 
   // 流程需要使用页面输入参数‘taskId’，且不带数字后缀，这里不做唯一性命名
@@ -143,54 +144,6 @@ if (window.__processDetailFromMixinFormVm__ && window.__processDetailFromMixinFo
           $refs.${nameGroup.buttonDialogRef}.openModal()
         }
       })(${nameGroup.buttonItemVar}.name)
-    }//流程按钮触发弹窗
-
-    function ${nameGroup.openButtonModalEvent}(index: Long) {
-      let ${nameGroup.hasFormVar}: Boolean; //流程表单是否存在
-      let ${nameGroup.validVar}: Boolean; //表单校验是否通过
-      ${nameGroup.buttonItemVar} = nasl.util.Get(${nameGroup.permissionButtonListVar}, index)
-      /* 撤回特殊处理 */
-      if (${nameGroup.buttonItemVar}.name == 'withdraw') {
-        $refs.${nameGroup.buttonBackDialogRef}.openModal()
-        return
-      } else {
-      }
-      nasl.js.block(\`'use JSBlock' \n // 流程表单验证
-if (window.__processDetailFromMixinFormVm__ && window.__processDetailFromMixinFormVm__.validate) {
-    ${nameGroup.hasFormVar} = true;
-    const validateResult = await window.__processDetailFromMixinFormVm__.validate();
-    if (validateResult.valid) {
-        ${nameGroup.validVar} = true;
-    }
-} else{
-    ${nameGroup.hasFormVar} = false;
-}\`)
-      if (${nameGroup.hasFormVar}) {
-        if (${nameGroup.validVar}) {
-          if (${nameGroup.buttonItemVar}.name == 'submit') {
-            /* 如果为submit按钮，直接走提交事件 */
-            ${nameGroup.submitButtonEvent}('submit')
-              return;
-            } else {
-            }
-        } else {
-          /* 无流程表单直接弹窗！*/
-          return;
-        }
-      } else {
-      }
-      nasl.util.Clear(${nameGroup.buttonBodyVar}, 'deep')
-      /* 加签单选组初始化 */
-      if (${nameGroup.buttonItemVar}.name == 'addSign') {
-        ${nameGroup.buttonBodyVar}.policyForAddSign = 'CurrentNode'
-        $refs.${nameGroup.buttonPopupRef}.openModal()
-      } else {
-      }
-      if (${nameGroup.buttonItemVar}.name == 'revert') {
-        $refs.${nameGroup.buttonPopupRef}.openModal()
-      } else {
-      }
-      $refs.${nameGroup.buttonDialogRef}.openModal()
     }//流程按钮触发弹窗
 
     function ${nameGroup.getUserEvent}(name: string, page: Long, size: Long, filterText: string) {
@@ -905,6 +858,17 @@ font-size: 3.73333vw;"
                 if ($refs.${nameGroup.formButtonPopupRef}.validate(undefined).valid) {
                   ${nameGroup.submitButtonEvent}(${nameGroup.buttonItemVar}.name)
                 } else {
+                  if (nasl.util.HasValue(${nameGroup.buttonBodyVar}.nodeId)) {
+                  } else {
+                    $refs.${nameGroup.buttonToastRef}.open();
+                    nasl.js.block(\`'use JSBlock' \n
+//提高弹出消息的显示层级
+const elements = document.querySelectorAll('.van-toast-group');
+elements.forEach(element => {
+    element.style.zIndex = '9999';
+});
+\`);
+                  }
                 }
               }
             }></VanButton>
@@ -912,5 +876,12 @@ font-size: 3.73333vw;"
         </VanLinearLayout>
       </Div>
     </VanPopup>
+    
+    <VanToast
+      ref="${nameGroup.buttonToastRef}"
+      message="无可流转节点，请联系管理员"
+      duration={2000}
+      type="fail"
+    ></VanToast>
   </VanLinearLayout>`;
 }

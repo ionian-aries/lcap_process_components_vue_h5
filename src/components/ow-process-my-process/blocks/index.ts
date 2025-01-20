@@ -784,7 +784,7 @@ right: -1.6vw;"
               pageable="auto-more"
               vusionDisabledAddslot={true}
               pageSize={5}
-              dataSource={${nameGroup.getMyInitiatedTasks}(elements.$ce.page, elements.$ce.size)}
+              dataSource={${nameGroup.getMyCompletedTasks}(elements.$ce.page, elements.$ce.size)}
               designerMode="success"
               hiddenempty={true}
               initialLoad={true}
@@ -873,12 +873,12 @@ vertical-align: baseline;"
                     widthStretch="true" 
                     text={(function match(_value) {
                       if (_value === true) {
-                        return nasl.util.Join(nasl.util.ListTransform(current.item.procInstCurrNodes, (item: ${structureNamespace}.CurrNode) => item.currNodeTitle), '，')
+                        return current.item.nodeTitle
                       } else if (_value === false) {
                         return '-'
                       } else {
                       }
-                    })(nasl.util.HasValue(current.item.procInstCurrNodes))}
+                    })(nasl.util.HasValue(current.item.nodeTitle))}
                       ></VanText>
                   </VanLinearLayout>
 
