@@ -95,6 +95,16 @@ export function genOwProcessButton(node: naslTypes.ViewElement | any) {
       let ${nameGroup.validVar}: Boolean; //表单校验是否通过
 
       nasl.util.Clear(${nameGroup.buttonBodyVar}, 'deep');
+      
+      (function match(_value) {
+        if (name === 'approve') {
+          ${nameGroup.buttonBodyVar}.comment = '同意'
+        } else if (name === 'reject') {
+          ${nameGroup.buttonBodyVar}.comment = '拒绝'
+        } else {
+        }
+      })(name)
+      
       ${nameGroup.buttonItemVar} = nasl.util.Get(${nameGroup.permissionButtonListVar}, index);
 
       (function match(_value) {
